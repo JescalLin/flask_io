@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>WebSocket test</title>
+    <!-- bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <!-- 連結CSS -->
+    <link rel="stylesheet" href="{{ url_for('static',    filename='/style.css') }}">
+
+    <!-- JQuery 的 CDN 連結 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+        integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        
+    <!-- Socket.IO 的 CDN 連結 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"
+        integrity="sha512-WL6WGKMPBiM9PnHRYIn5YEtq0Z8XP4fkVb4qy7PP4vhmYQErJ/dySyXuFIMDf1eEYCXCrQrMJfkNwKc9gsjTjA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
+    
+    <!-- Socket.IO 的使用 -->
+    <script type="text/javascript" charset="utf-8">
+        
+
+        function checkfile(sender) {
+            // 可接受的附檔名
+            var validExts = new Array(".jpg", ".png", ".JPG", ".PNG");
+
+            var fileExt = sender.value;
+            fileExt = fileExt.substring(fileExt.lastIndexOf('.'));
+            if (validExts.indexOf(fileExt) < 0) {
+                alert("檔案類型錯誤，可接受的副檔名有： " + validExts.toString());
+                sender.value = null;
+                return false;
+            }
+            else return true;
+        }
+
+        $(document).ready(function () {
+            
+            // Socket.IO Start connect
+            var socket = io.connect();
+            
+            // Socket.IO send Image
+            $("#file").change(function(e){
+                if (checkfile(this)){
+                        var data = e.originalEvent.target.files[0];
+                        var reader = new FileReader();
+                        reader.onload = function(evt) {
+                            // $('#image_upload_preview').attr('src', evt.target.result);
+                            var img = {}
+                            img.file = evt.target.result;
+                            img.fileName = data.name;
+                            socket.emit('image', img);
+                        }
+                    reader.readAsDataURL(this.files[0]);
+                    }
+                
+                e.value = '';
+            })
+
+            // Socket.IO get Image
+            socket.on('get_image', function (image) {
+                console.log(image);
+                // $('#image_upload_preview').attr('src', image);
+                // $('#chat_content').append('<img src ='+ $(image) +'>');
+                
+                $('#chat_content').append('<img class= " bg-light text-dark" src =  "' + image + '">');
+                $(document).scrollTop($(document).height());
+            
+            });
+
+            // Socket.IO send message
+            $("#send").click(function (e) {
+                // Send message
+                socket.emit('send', 'A say: ' + $('#message').val())
+                // Clear input field
+                $('#message').val('')
+            });
+            
+            // Socket.IO get message
+            socket.on('get', function (data) {
+                $('#chat_content').append('<div id= "chat" class= "rounded-pill bg-light text-dark"> ' + data + '</div>');
+                $(document).scrollTop($(document).height());
+            });
+            
+            // Socket.IO get test
+            socket.on("message", function (data) {
+                $('#chat_content').append('<div id= "chat" class= "rounded-pill bg-warning text-dark">System: ' + data + '</div>');
+                $(document).scrollTop($(document).height());
+            });
+            
+            // Socket.IO send test
+            $("#test").click(function (e) {
+                socket.emit('test')
+            });
+        });
+    </script>
+</head>
+
+
+<body>
+    <h1>ChatRoom</h1>
+    <h2>Hello</h2>
+    <div id= 'chat_box'>
+        <div id='chat_content'></div>
+    </div>    
+    <div class="fixed-bottom">
+        <div id="editline" class="hstack gap-3" >
+            <input class="form-control me-auto" id = "message" type="text" placeholder="Text here..." >
+            <button type="button" class="btn btn-primary" id="send" value="Send">Send</button>
+            <button type="button" class="btn btn-secondary" id="test" value="Test">Test</button>
+            <div class="vr"></div>
+            <input type="file" id="file" name="file" style="display: none"/>
+            <label for="file" class="btn btn-outline-danger" id="file_chlick">Test</label>
+        </div>
+    </div>
+
+    <hr />
+    <!-- <img id="image_upload_preview" src="http://placehold.it/100x100"> -->
+    <img hidden id="image_upload_preview" src="">
+    
+</body>
+</html>
