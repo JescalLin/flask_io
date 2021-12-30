@@ -40,6 +40,6 @@ def img(image):
     
     socketio.emit('get_image', img, callback=ack())
 
-if __name__ == "__main__":
-    socketio.run(app)
+if __name__ == '__main__':
+    app.run()
 
