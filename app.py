@@ -4,8 +4,6 @@ from flask_socketio import SocketIO, send
 from flask import redirect, url_for
 from urllib.request import urlopen
 
-import numpy as np
-
 
 #初始化
 app = Flask(__name__, static_url_path='/static')
