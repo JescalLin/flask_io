@@ -1,4 +1,3 @@
-import cv2, base64
 from flask import Flask, config, render_template
 from flask import Flask, make_response, request, Response
 from flask_socketio import SocketIO, send  
