@@ -7,7 +7,6 @@ click==8.0.3
 colorama==0.4.4
 cycler==0.11.0
 dnspython==2.1.0
-eventlet==0.33.0
 Flask==2.0.2
 Flask-SocketIO==5.1.1
 fonttools==4.28.1
@@ -41,4 +40,5 @@ urllib3==1.26.7
 Werkzeug==2.0.2
 zope.event==4.5.0
 zope.interface==5.4.0
-gunicorn
+gunicorn==20.1.0 
+eventlet==0.30.2
