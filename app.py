@@ -38,5 +38,5 @@ def img(image):
     socketio.emit('get_image', img, callback=ack())
 
 if __name__ == '__main__':
-    app.run()
+    socketio.run(app)
 
